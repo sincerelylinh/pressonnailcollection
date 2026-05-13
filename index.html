@@ -15,7 +15,7 @@
     --deep: #3d2229;
     --nailphoria: #b5768c;
     --nailvesta: #7a8cb5;
-    --etsy: #9b8f6b;
+    --lilynailsart: #9b8f6b;
     --nailhaven: #7a9b8c;
   }
 
@@ -102,13 +102,13 @@
   .brand-tab.nailvesta  { color: var(--nailvesta);  border-color: var(--nailvesta); }
   .brand-tab.nailphoria { color: var(--nailphoria); border-color: var(--nailphoria); }
   .brand-tab.nailhaven  { color: var(--nailhaven);  border-color: var(--nailhaven); }
-  .brand-tab.etsy       { color: var(--etsy);       border-color: var(--etsy); }
+  .brand-tab.lilynailsart       { color: var(--lilynailsart);       border-color: var(--lilynailsart); }
   .brand-tab:hover, .brand-tab.active { color: white; }
   .brand-tab.all.active,        .brand-tab.all:hover        { background: var(--mauve);     border-color: var(--mauve); }
   .brand-tab.nailvesta.active,  .brand-tab.nailvesta:hover  { background: var(--nailvesta);  border-color: var(--nailvesta); }
   .brand-tab.nailphoria.active, .brand-tab.nailphoria:hover { background: var(--nailphoria); border-color: var(--nailphoria); }
   .brand-tab.nailhaven.active,  .brand-tab.nailhaven:hover  { background: var(--nailhaven);  border-color: var(--nailhaven); }
-  .brand-tab.etsy.active,       .brand-tab.etsy:hover       { background: var(--etsy);       border-color: var(--etsy); }
+  .brand-tab.lilynailsart.active,       .brand-tab.lilynailsart:hover       { background: var(--lilynailsart);       border-color: var(--lilynailsart); }
 
   .add-btn {
     display: flex; align-items: center; gap: 0.4rem;
@@ -212,7 +212,7 @@
   .badge-nailvesta  { background: var(--nailvesta); }
   .badge-nailphoria { background: var(--nailphoria); }
   .badge-nailhaven  { background: var(--nailhaven); }
-  .badge-etsy       { background: var(--etsy); }
+  .badge-lilynailsart       { background: var(--lilynailsart); }
 
   .card-name { font-family: 'Cormorant Garamond', serif; font-size: 1rem; font-weight: 400; line-height: 1.2; color: var(--deep); margin-bottom: 0.18rem; }
   .card-shape { font-size: 0.6rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--rose); font-weight: 300; }
@@ -357,8 +357,8 @@
         <div class="stat-label">NailHaven</div>
       </div>
       <div class="stat">
-        <div class="stat-num" id="etsy-count" style="color:var(--etsy)">—</div>
-        <div class="stat-label">Etsy</div>
+        <div class="stat-num" id="etsy-count" style="color:var(--lilynailsart)">—</div>
+        <div class="stat-label">LilyNails</div>
       </div>
     </div>
   </header>
@@ -377,7 +377,7 @@
       <button class="brand-tab nailvesta"   data-brand="nailvesta">NailVesta</button>
       <button class="brand-tab nailphoria"  data-brand="nailphoria">NailPhoria</button>
       <button class="brand-tab nailhaven"   data-brand="nailhaven">NailHaven</button>
-      <button class="brand-tab etsy"        data-brand="etsy">Etsy</button>
+      <button class="brand-tab lilynailsart"        data-brand="lilynailsart">LilyNails</button>
     </div>
   </div>
 
@@ -426,7 +426,7 @@
         <option value="nailvesta">NailVesta</option>
         <option value="nailphoria">NailPhoria</option>
         <option value="nailhaven">NailHaven</option>
-        <option value="etsy">Etsy</option>
+        <option value="lilynailsart">LilyNails</option>
       </select>
     </div>
 
@@ -502,8 +502,8 @@
   let activeShape  = 'all';
   let searchQ      = '';
 
-  const BRAND_LABELS  = { nailvesta:'NailVesta', nailphoria:'NailPhoria', nailhaven:'NailHaven', etsy:'Etsy' };
-  const BRAND_COLORS  = { nailvesta:'#7a8cb5', nailphoria:'#b5768c', nailhaven:'#7a9b8c', etsy:'#9b8f6b' };
+  const BRAND_LABELS  = { nailvesta:'NailVesta', nailphoria:'NailPhoria', nailhaven:'NailHaven', lilynailsart:'LilyNailsArt' };
+  const BRAND_COLORS  = { nailvesta:'#7a8cb5', nailphoria:'#b5768c', nailhaven:'#7a9b8c', lilynailsart:'#9b8f6b' };
   const LENGTH_LABELS = { short:'Short', medium:'Medium', long:'Long' };
   const SHAPE_LABELS  = { square:'Square', almond:'Almond', stiletto:'Stiletto', other:'Other' };
 
@@ -599,7 +599,7 @@
     document.getElementById('nailvesta-count').textContent  = sets.filter(s=>s.brand==='nailvesta').length;
     document.getElementById('nailphoria-count').textContent = sets.filter(s=>s.brand==='nailphoria').length;
     document.getElementById('nailhaven-count').textContent  = sets.filter(s=>s.brand==='nailhaven').length;
-    document.getElementById('etsy-count').textContent       = sets.filter(s=>s.brand==='etsy').length;
+    document.getElementById('etsy-count').textContent       = sets.filter(s=>s.brand==='lilynailsart').length;
 
     grid.innerHTML = '';
 
@@ -615,7 +615,7 @@
     grid.style.display = 'grid';
 
     if (activeBrand === 'all') {
-      ['nailvesta','nailphoria','nailhaven','etsy'].forEach(brand => {
+      ['nailvesta','nailphoria','nailhaven','lilynailsart'].forEach(brand => {
         const group = list.filter(s => s.brand === brand);
         if (!group.length) return;
         const h = document.createElement('div');
