@@ -78,21 +78,23 @@
 
   .header-stats {
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat(5, minmax(0, 1fr));
     margin-top: 2rem;
     border: 1px solid var(--blush);
     border-radius: 16px;
     overflow: hidden;
     background: white;
+    width: 100%;
   }
   .stat {
     text-align: center;
-    padding: 1.4rem 0.5rem;
+    padding: 1.4rem 0.25rem;
     border-right: 1px solid var(--blush);
+    min-width: 0;
   }
   .stat:last-child { border-right: none; }
   .stat-num { font-family: 'Cormorant Garamond', serif; font-size: 2.6rem; font-weight: 300; color: var(--rose); line-height: 1; }
-  .stat-label { font-size: 0.6rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--mauve); margin-top: 0.35rem; }
+  .stat-label { font-size: 0.55rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--mauve); margin-top: 0.35rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
   /* ── Controls ── */
   .controls {
@@ -321,23 +323,20 @@
 
   @media (max-width: 600px) {
     .header-stats {
-      display: flex;
-      flex-direction: row;
-      overflow-x: auto;
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
       border-radius: 12px;
-      -webkit-overflow-scrolling: touch;
+      width: 100%;
+      overflow: hidden;
     }
     .stat {
-      min-width: 80px;
-      flex: 1 0 auto;
-      padding: 1rem 0.6rem;
+      padding: 0.9rem 0.1rem;
       border-right: 1px solid var(--blush);
-      border-top: none !important;
-      grid-column: unset !important;
+      min-width: 0;
     }
     .stat:last-child { border-right: none; }
-    .stat-num { font-size: 1.8rem; }
-    .stat-label { font-size: 0.5rem; }
+    .stat-num { font-size: 1.5rem; }
+    .stat-label { font-size: 0.46rem; letter-spacing: 0.06em; }
     .controls-top { justify-content: flex-start; }
     .search-input { width: 100%; }
     .grid { gap: 0.7rem; }
@@ -372,7 +371,7 @@
       </div>
       <div class="stat">
         <div class="stat-num" id="etsy-count" style="color:var(--lilynailsart)">—</div>
-        <div class="stat-label">LilyNails</div>
+        <div class="stat-label">LNA</div>
       </div>
     </div>
   </header>
@@ -391,7 +390,7 @@
       <button class="brand-tab nailvesta"   data-brand="nailvesta">NailVesta</button>
       <button class="brand-tab nailphoria"  data-brand="nailphoria">NailPhoria</button>
       <button class="brand-tab nailhaven"   data-brand="nailhaven">NailHaven</button>
-      <button class="brand-tab lilynailsart"        data-brand="lilynailsart">LilyNails</button>
+      <button class="brand-tab lilynailsart"        data-brand="lilynailsart">LNA</button>
     </div>
   </div>
 
@@ -440,7 +439,7 @@
         <option value="nailvesta">NailVesta</option>
         <option value="nailphoria">NailPhoria</option>
         <option value="nailhaven">NailHaven</option>
-        <option value="lilynailsart">LilyNails</option>
+        <option value="lilynailsart">LilyNailsArt</option>
       </select>
     </div>
 
