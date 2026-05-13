@@ -4,6 +4,20 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>My Press-On Nail Collection</title>
+
+<!-- Favicon: nail polish SVG -->
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23fdf8f4'/%3E%3Cellipse cx='32' cy='19' rx='11' ry='7' fill='%23f2d6d0' stroke='%23c9837a' stroke-width='2'/%3E%3Crect x='21' y='19' width='22' height='26' rx='4' fill='%23c9837a'/%3E%3Crect x='24' y='22' width='16' height='20' rx='3' fill='%23e8a8a3'/%3E%3Cellipse cx='32' cy='19' rx='11' ry='7' fill='%23f2d6d0' stroke='%23c9837a' stroke-width='2'/%3E%3C/svg%3E" />
+
+<!-- Open Graph / link preview -->
+<meta property="og:type"        content="website" />
+<meta property="og:title"       content="My Press-On Nail Collection 💅" />
+<meta property="og:description" content="My personal press-on nail archive — NailVesta, NailPhoria, NailHaven &amp; LilyNailsArt." />
+<meta property="og:image"       content="" />
+<meta name="twitter:card"       content="summary_large_image" />
+<meta name="twitter:title"      content="My Press-On Nail Collection 💅" />
+<meta name="twitter:description" content="My personal press-on nail archive." />
+<meta name="twitter:image"      content="" />
+
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@200;300;400;500&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
@@ -554,9 +568,16 @@
       showToast('Could not connect to database. Check your Supabase setup.', true);
       return;
     }
-    sets = data || [];
+    // Migrate any legacy 'etsy' rows to 'lilynailsart' in the DB silently
+    const legacyIds = (data || []).filter(s => s.brand === 'etsy').map(s => s.id);
+    if (legacyIds.length) {
+      await db.from(TABLE).update({ brand: 'lilynailsart' }).in('id', legacyIds);
+    }
+    // Normalise in memory regardless of DB response
+    sets = (data || []).map(s => s.brand === 'etsy' ? { ...s, brand: 'lilynailsart' } : s);
     showStatus('done');
     render();
+    updateOgImage();
   }
 
   // ── Status area ────────────────────────────────────────────────────────────
@@ -629,6 +650,13 @@
     } else {
       list.forEach(s => grid.appendChild(makeCard(s)));
     }
+  }
+
+  // ── Open Graph image: pick first set photo for link previews ───────────────
+  function updateOgImage() {
+    const withPhoto = sets.find(s => s.photo && s.photo.startsWith('http'));
+    const tag = document.querySelector('meta[property="og:image"]');
+    if (tag && withPhoto) tag.setAttribute('content', withPhoto.photo);
   }
 
   function makeCard(s) {
