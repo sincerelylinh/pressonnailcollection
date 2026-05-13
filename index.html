@@ -48,44 +48,55 @@
 
   /* ── Header ── */
   header {
-    padding: 2.5rem 0 1.8rem;
+    padding: 3rem 0 2.2rem;
     text-align: center;
     border-bottom: 1px solid var(--blush);
   }
   .header-eyebrow {
-    font-weight: 200; letter-spacing: 0.35em; font-size: 0.62rem;
-    text-transform: uppercase; color: var(--rose); margin-bottom: 0.5rem;
+    font-weight: 200; letter-spacing: 0.45em; font-size: 0.8rem;
+    text-transform: uppercase; color: var(--rose); margin-bottom: 0.7rem;
   }
   header h1 {
     font-family: 'Cormorant Garamond', serif; font-weight: 300;
-    font-size: clamp(2rem, 5vw, 3.4rem); line-height: 1.1; color: var(--deep);
+    font-size: clamp(2.8rem, 7vw, 5.2rem); line-height: 1.08; color: var(--deep);
   }
   header h1 em { font-style: italic; color: var(--rose); }
 
   .header-stats {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-top: 1.2rem;
-    flex-wrap: nowrap;
-    overflow-x: auto;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    margin-top: 2rem;
+    border: 1px solid var(--blush);
+    border-radius: 16px;
+    overflow: hidden;
+    background: white;
   }
-  .stat { text-align: center; padding: 0 1.1rem; border-right: 1px solid var(--blush); flex-shrink: 0; }
+  .stat {
+    text-align: center;
+    padding: 1.4rem 0.5rem;
+    border-right: 1px solid var(--blush);
+  }
   .stat:last-child { border-right: none; }
-  .stat-num { font-family: 'Cormorant Garamond', serif; font-size: 1.7rem; font-weight: 300; color: var(--rose); line-height: 1; }
-  .stat-label { font-size: 0.58rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--mauve); margin-top: 0.2rem; }
+  .stat-num { font-family: 'Cormorant Garamond', serif; font-size: 2.6rem; font-weight: 300; color: var(--rose); line-height: 1; }
+  .stat-label { font-size: 0.6rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--mauve); margin-top: 0.35rem; }
 
   /* ── Controls ── */
   .controls {
-    display: flex; align-items: center; justify-content: space-between;
-    gap: 0.8rem; padding: 1.4rem 0; flex-wrap: wrap;
+    display: flex; flex-direction: column;
+    gap: 0.9rem; padding: 1.4rem 0 0.8rem;
   }
-  .brand-tabs { display: flex; gap: 0.4rem; flex-wrap: wrap; }
+  .controls-top {
+    display: flex; align-items: center; justify-content: flex-end; gap: 0.6rem; flex-wrap: wrap;
+  }
+  .brand-tabs {
+    display: flex; gap: 0.4rem; width: 100%;
+  }
   .brand-tab {
-    padding: 0.42rem 1rem; border-radius: 999px; border: 1.5px solid currentColor;
+    flex: 1; text-align: center;
+    padding: 0.42rem 0.5rem; border-radius: 999px; border: 1.5px solid currentColor;
     background: transparent; cursor: pointer; font-family: 'Jost', sans-serif;
-    font-size: 0.7rem; font-weight: 400; letter-spacing: 0.09em;
-    text-transform: uppercase; transition: all 0.2s;
+    font-size: 0.68rem; font-weight: 400; letter-spacing: 0.07em;
+    text-transform: uppercase; transition: all 0.2s; white-space: nowrap;
   }
   .brand-tab.all        { color: var(--mauve);     border-color: var(--mauve); }
   .brand-tab.nailvesta  { color: var(--nailvesta);  border-color: var(--nailvesta); }
@@ -294,11 +305,13 @@
     display: flex; align-items: center; justify-content: center;
   }
 
-  @media (max-width: 480px) {
-    .stat { padding: 0 0.65rem; }
-    .stat-num { font-size: 1.4rem; }
-    .stat-label { font-size: 0.52rem; }
-    .controls { flex-direction: column; align-items: flex-start; }
+  @media (max-width: 600px) {
+    .header-stats { grid-template-columns: repeat(3, 1fr); }
+    .header-stats .stat:nth-child(3) { border-right: none; }
+    .header-stats .stat:nth-child(4) { border-top: 1px solid var(--blush); }
+    .header-stats .stat:nth-child(5) { border-top: 1px solid var(--blush); border-right: none; }
+    .stat-num { font-size: 2rem; }
+    .controls-top { justify-content: flex-start; }
     .search-input { width: 100%; }
     .grid { gap: 0.7rem; }
     .modal { padding: 1.4rem; }
@@ -339,19 +352,19 @@
 
   <!-- Controls -->
   <div class="controls">
+    <div class="controls-top">
+      <div class="search-wrap">
+        <span class="search-icon">🔍</span>
+        <input class="search-input" id="search" placeholder="Search…" />
+      </div>
+      <button class="add-btn" id="open-modal">＋ Add Set</button>
+    </div>
     <div class="brand-tabs">
       <button class="brand-tab all active"  data-brand="all">All</button>
       <button class="brand-tab nailvesta"   data-brand="nailvesta">NailVesta</button>
       <button class="brand-tab nailphoria"  data-brand="nailphoria">NailPhoria</button>
       <button class="brand-tab nailhaven"   data-brand="nailhaven">NailHaven</button>
       <button class="brand-tab etsy"        data-brand="etsy">Etsy</button>
-    </div>
-    <div style="display:flex;gap:0.6rem;align-items:center;flex-wrap:wrap;">
-      <div class="search-wrap">
-        <span class="search-icon">🔍</span>
-        <input class="search-input" id="search" placeholder="Search…" />
-      </div>
-      <button class="add-btn" id="open-modal">＋ Add Set</button>
     </div>
   </div>
 
