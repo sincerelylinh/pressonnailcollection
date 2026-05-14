@@ -144,6 +144,7 @@
     padding-bottom: 1.2rem; border-bottom: 1px solid var(--blush);
   }
   .filter-row { display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap; }
+  .filter-row.vibe-row { flex-wrap: nowrap; }
   .filter-row-label {
     font-size: 0.58rem; letter-spacing: 0.18em; text-transform: uppercase;
     color: var(--mauve); white-space: nowrap; min-width: 44px;
@@ -157,9 +158,11 @@
   .shape-pill:hover { border-color: var(--rose); color: var(--rose); }
   .shape-pill.active { background: var(--rose); border-color: var(--rose); color: white; }
 
-  /* Vibe pills - same style as shape pills with distinct active colors per vibe */
+  /* Vibe pills - stretch evenly across the row */
   .vibe-pill {
-    padding: 0.3rem 0.8rem; border-radius: 999px; border: 1px solid var(--blush);
+    flex: 1;
+    text-align: center;
+    padding: 0.3rem 0.4rem; border-radius: 999px; border: 1px solid var(--blush);
     background: white; cursor: pointer; font-family: 'Jost', sans-serif;
     font-size: 0.68rem; font-weight: 400; letter-spacing: 0.07em;
     color: var(--mauve); transition: all 0.18s; white-space: nowrap;
@@ -423,13 +426,14 @@
       <button class="shape-pill" data-tier="shape" data-val="almond">Almond</button>
       <button class="shape-pill" data-tier="shape" data-val="stiletto">Stiletto</button>
     </div>
-    <div class="filter-row">
+    <div class="filter-row vibe-row">
       <span class="filter-row-label">Vibe</span>
       <button class="vibe-pill active" data-tier="vibe" data-val="all">All</button>
       <button class="vibe-pill" data-tier="vibe" data-val="summer">Summer</button>
       <button class="vibe-pill" data-tier="vibe" data-val="fall">Fall</button>
       <button class="vibe-pill" data-tier="vibe" data-val="dark">Dark</button>
       <button class="vibe-pill" data-tier="vibe" data-val="spring">Spring</button>
+      <button class="vibe-pill" data-tier="vibe" data-val="everyday">Everyday</button>
     </div>
   </div>
 
@@ -502,6 +506,7 @@
         <option value="fall">Fall</option>
         <option value="dark">Dark</option>
         <option value="spring">Spring</option>
+        <option value="everyday">Everyday</option>
       </select>
     </div>
 
@@ -543,11 +548,11 @@
   let activeBrand  = 'all';
   let activeLength = 'all';
   let activeShape  = 'all';
-  let activeVibe   = 'all';
+  let activeVibes  = new Set(['all']);
   let searchQ      = '';
 
   const BRAND_LABELS  = { nailvesta:'NailVesta', nailphoria:'NailPhoria', nailhaven:'NailHaven', lilynailsart:'LilyNailsArt' };
-  const VIBE_LABELS   = { summer:'Summer', fall:'Fall', dark:'Dark', spring:'Spring' };
+  const VIBE_LABELS   = { summer:'Summer', fall:'Fall', dark:'Dark', spring:'Spring', everyday:'Everyday' };
   const BRAND_COLORS  = { nailvesta:'#7a8cb5', nailphoria:'#b5768c', nailhaven:'#7a9b8c', lilynailsart:'#9b8f6b' };
   const LENGTH_LABELS = { short:'Short', medium:'Medium', long:'Long' };
   const SHAPE_LABELS  = { square:'Square', almond:'Almond', stiletto:'Stiletto', other:'Other' };
@@ -636,7 +641,7 @@
       if (activeBrand  !== 'all' && s.brand  !== activeBrand)  return false;
       if (activeLength !== 'all' && s.length !== activeLength) return false;
       if (activeShape  !== 'all' && s.shape  !== activeShape)  return false;
-      if (activeVibe   !== 'all' && s.vibe   !== activeVibe)   return false;
+      if (!activeVibes.has('all') && !activeVibes.has(s.vibe)) return false;
       if (q && !s.name.toLowerCase().includes(q) && !(s.notes||'').toLowerCase().includes(q)) return false;
       return true;
     });
@@ -856,8 +861,30 @@
   });
   document.querySelectorAll('[data-tier="vibe"]').forEach(pill => {
     pill.addEventListener('click', () => {
-      document.querySelectorAll('[data-tier="vibe"]').forEach(p => p.classList.remove('active'));
-      pill.classList.add('active'); activeVibe = pill.dataset.val; render();
+      const val = pill.dataset.val;
+      if (val === 'all') {
+        // Reset to all
+        activeVibes = new Set(['all']);
+        document.querySelectorAll('[data-tier="vibe"]').forEach(p => p.classList.remove('active'));
+        pill.classList.add('active');
+      } else {
+        // Toggle this vibe
+        activeVibes.delete('all');
+        document.querySelector('[data-tier="vibe"][data-val="all"]').classList.remove('active');
+        if (activeVibes.has(val)) {
+          activeVibes.delete(val);
+          pill.classList.remove('active');
+          // If nothing selected, revert to all
+          if (activeVibes.size === 0) {
+            activeVibes.add('all');
+            document.querySelector('[data-tier="vibe"][data-val="all"]').classList.add('active');
+          }
+        } else {
+          activeVibes.add(val);
+          pill.classList.add('active');
+        }
+      }
+      render();
     });
   });
 
