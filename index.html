@@ -1,0 +1,961 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+<title>My Press-On Nail Collection</title>
+
+<!-- Favicon: nail polish SVG -->
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23fdf8f4'/%3E%3Cellipse cx='32' cy='19' rx='11' ry='7' fill='%23f2d6d0' stroke='%23c9837a' stroke-width='2'/%3E%3Crect x='21' y='19' width='22' height='26' rx='4' fill='%23c9837a'/%3E%3Crect x='24' y='22' width='16' height='20' rx='3' fill='%23e8a8a3'/%3E%3Cellipse cx='32' cy='19' rx='11' ry='7' fill='%23f2d6d0' stroke='%23c9837a' stroke-width='2'/%3E%3C/svg%3E" />
+
+<!-- Open Graph / link preview -->
+<meta property="og:type"        content="website" />
+<meta property="og:title"       content="My Press-On Nail Collection 💅" />
+<meta property="og:description" content="My personal press-on nail archive — NailVesta, NailPhoria &amp; more." />
+<meta property="og:image"       content="" />
+<meta name="twitter:card"       content="summary_large_image" />
+<meta name="twitter:title"      content="My Press-On Nail Collection 💅" />
+<meta name="twitter:description" content="My personal press-on nail archive." />
+<meta name="twitter:image"      content="" />
+
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@200;300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  :root {
+    --cream: #fdf8f4;
+    --blush: #f2d6d0;
+    --rose: #c9837a;
+    --mauve: #9b6b74;
+    --deep: #3d2229;
+    --nailphoria: #b5768c;
+    --nailvesta: #7a8cb5;
+    --other: #9b8f6b;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Jost', sans-serif;
+    touch-action: pan-x pan-y;
+    background-color: var(--cream);
+    color: var(--deep);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed; top: -40%; right: -20%;
+    width: 80vw; height: 80vw;
+    background: radial-gradient(ellipse, #f7e0dc 0%, transparent 65%);
+    pointer-events: none; z-index: 0;
+  }
+  body::after {
+    content: '';
+    position: fixed; bottom: -30%; left: -15%;
+    width: 60vw; height: 60vw;
+    background: radial-gradient(ellipse, #dfe4f2 0%, transparent 65%);
+    pointer-events: none; z-index: 0;
+  }
+
+  .wrap { position: relative; z-index: 1; max-width: 900px; margin: 0 auto; padding: 0 1.5rem; }
+
+  /* ── Header ── */
+  header {
+    padding: 3rem 0 2.2rem;
+    text-align: center;
+    border-bottom: 1px solid var(--blush);
+  }
+  .header-eyebrow {
+    font-weight: 200; letter-spacing: 0.45em; font-size: 0.8rem;
+    text-transform: uppercase; color: var(--rose); margin-bottom: 0.7rem;
+  }
+  header h1 {
+    font-family: 'Cormorant Garamond', serif; font-weight: 300;
+    font-size: clamp(2.8rem, 7vw, 5.2rem); line-height: 1.08; color: var(--deep);
+  }
+  header h1 em { font-style: italic; color: var(--rose); }
+
+  .header-stats {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    margin-top: 2rem;
+    border: 1px solid var(--blush);
+    border-radius: 16px;
+    overflow: hidden;
+    background: white;
+    width: 100%;
+  }
+  .stat {
+    text-align: center;
+    padding: 1.4rem 0.25rem;
+    border-right: 1px solid var(--blush);
+    min-width: 0;
+  }
+  .stat:last-child { border-right: none; }
+  .stat-num { font-family: 'Cormorant Garamond', serif; font-size: 2.6rem; font-weight: 300; color: var(--rose); line-height: 1; }
+  .stat-label { font-size: 0.55rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--mauve); margin-top: 0.35rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+  /* ── Controls ── */
+  .controls {
+    display: flex; flex-direction: column;
+    gap: 0.9rem; padding: 1.4rem 0 0.8rem;
+  }
+  .controls-top {
+    display: flex; align-items: center; justify-content: flex-end; gap: 0.6rem; flex-wrap: wrap;
+  }
+  .brand-tabs {
+    display: flex; gap: 0.4rem; width: 100%;
+  }
+  .brand-tab {
+    flex: 1; text-align: center;
+    padding: 0.42rem 0.5rem; border-radius: 999px; border: 1.5px solid currentColor;
+    background: transparent; cursor: pointer; font-family: 'Jost', sans-serif;
+    font-size: 0.68rem; font-weight: 400; letter-spacing: 0.07em;
+    text-transform: uppercase; transition: all 0.2s; white-space: nowrap;
+  }
+  .brand-tab.all        { color: var(--mauve);     border-color: var(--mauve); }
+  .brand-tab.nailvesta  { color: var(--nailvesta);  border-color: var(--nailvesta); }
+  .brand-tab.nailphoria { color: var(--nailphoria); border-color: var(--nailphoria); }
+  .brand-tab.other      { color: var(--other);      border-color: var(--other); }
+  .brand-tab:hover, .brand-tab.active { color: white; }
+  .brand-tab.all.active,        .brand-tab.all:hover        { background: var(--mauve);     border-color: var(--mauve); }
+  .brand-tab.nailvesta.active,  .brand-tab.nailvesta:hover  { background: var(--nailvesta);  border-color: var(--nailvesta); }
+  .brand-tab.nailphoria.active, .brand-tab.nailphoria:hover { background: var(--nailphoria); border-color: var(--nailphoria); }
+  .brand-tab.other.active, .brand-tab.other:hover { background: var(--other); border-color: var(--other); }
+
+  .add-btn {
+    display: flex; align-items: center; gap: 0.4rem;
+    padding: 0.48rem 1.2rem; background: var(--deep); color: var(--cream);
+    border: none; border-radius: 999px; cursor: pointer;
+    font-family: 'Jost', sans-serif; font-size: 0.72rem;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    transition: background 0.2s, transform 0.15s;
+  }
+  .add-btn:hover { background: var(--rose); transform: translateY(-1px); }
+  .add-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+  /* ── Two-tier filters ── */
+  .filter-tiers {
+    display: flex; flex-direction: column; gap: 0.55rem;
+    padding-bottom: 1.2rem; border-bottom: 1px solid var(--blush);
+  }
+  .filter-row { display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap; }
+  .filter-row.vibe-row { flex-wrap: nowrap; }
+  .filter-row-label {
+    font-size: 0.58rem; letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--mauve); white-space: nowrap; min-width: 44px;
+  }
+  .shape-pill {
+    padding: 0.3rem 0.8rem; border-radius: 999px; border: 1px solid var(--blush);
+    background: white; cursor: pointer; font-family: 'Jost', sans-serif;
+    font-size: 0.68rem; font-weight: 400; letter-spacing: 0.07em;
+    color: var(--mauve); transition: all 0.18s; white-space: nowrap;
+  }
+  .shape-pill:hover { border-color: var(--rose); color: var(--rose); }
+  .shape-pill.active { background: var(--rose); border-color: var(--rose); color: white; }
+
+  /* Vibe pills - stretch evenly like brand tabs */
+  .vibe-pill {
+    flex: 1;
+    text-align: center;
+    padding: 0.42rem 0.25rem; border-radius: 999px; border: 1px solid var(--blush);
+    background: white; cursor: pointer; font-family: 'Jost', sans-serif;
+    font-size: 0.68rem; font-weight: 400; letter-spacing: 0.07em;
+    color: var(--mauve); transition: all 0.2s; white-space: nowrap;
+    min-height: 32px; display: flex; align-items: center; justify-content: center;
+  }
+  .vibe-pill:hover { border-color: var(--rose); color: var(--rose); }
+  .vibe-pill.active { background: var(--rose); border-color: var(--rose); color: white; }
+
+  /* Search */
+  .search-wrap { position: relative; }
+  .search-input {
+    padding: 0.45rem 1rem 0.45rem 2rem; border: 1.5px solid var(--blush);
+    border-radius: 999px; background: white; font-family: 'Jost', sans-serif;
+    font-size: 0.78rem; color: var(--deep); width: 180px; transition: border-color 0.18s;
+  }
+  .search-input:focus { outline: none; border-color: var(--rose); }
+  .search-icon { position: absolute; left: 0.65rem; top: 50%; transform: translateY(-50%); color: var(--rose); font-size: 0.8rem; pointer-events: none; }
+
+  /* ── Loading / Empty / Error ── */
+  .status-state { text-align: center; padding: 4rem 2rem; }
+  .status-icon { font-size: 2.5rem; margin-bottom: 0.8rem; }
+  .status-state h3 { font-family: 'Cormorant Garamond', serif; font-weight: 300; font-size: 1.5rem; color: var(--mauve); margin-bottom: 0.4rem; }
+  .status-state p { font-size: 0.82rem; color: var(--rose); font-weight: 200; }
+  .spinner {
+    width: 36px; height: 36px; border: 3px solid var(--blush);
+    border-top-color: var(--rose); border-radius: 50%;
+    animation: spin 0.8s linear infinite; margin: 0 auto 1rem;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ── Grid ── */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+    padding: 1.4rem 0 4rem;
+  }
+
+  .brand-heading {
+    grid-column: 1 / -1;
+    display: flex; align-items: center; gap: 0.7rem;
+    padding-bottom: 0.4rem; border-bottom: 1.5px solid var(--blush);
+    margin-top: 0.6rem;
+  }
+  .brand-heading h2 { font-family: 'Cormorant Garamond', serif; font-weight: 400; font-style: italic; font-size: 1.3rem; }
+  .brand-heading .dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .brand-heading .count { margin-left: auto; font-size: 0.6rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--mauve); }
+
+  /* ── Card ── */
+  .card {
+    background: white; border-radius: 12px; overflow: hidden;
+    box-shadow: 0 2px 12px rgba(61,34,41,0.07);
+    transition: transform 0.22s, box-shadow 0.22s;
+    animation: fadeUp 0.32s ease both;
+  }
+  .card:hover { transform: translateY(-3px); box-shadow: 0 6px 24px rgba(61,34,41,0.12); }
+
+  .card.status-worn     { box-shadow: 0 0 0 2px #6abf87, 0 2px 12px rgba(61,34,41,0.07); }
+  .card.status-archived { box-shadow: 0 0 0 2px #e57373, 0 2px 12px rgba(61,34,41,0.07); }
+  .card.status-worn:hover     { box-shadow: 0 0 0 2px #6abf87, 0 6px 24px rgba(61,34,41,0.12); }
+  .card.status-archived:hover { box-shadow: 0 0 0 2px #e57373, 0 6px 24px rgba(61,34,41,0.12); }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(14px); }
+    to   { opacity: 1; transform: none; }
+  }
+
+  .card-img { width: 100%; aspect-ratio: 3/4; object-fit: cover; display: block; cursor: zoom-in; }
+  .card-img-placeholder {
+    width: 100%; aspect-ratio: 3/4; display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    background: linear-gradient(135deg, var(--blush), #f7eaf8);
+    color: var(--rose); font-size: 1.8rem; gap: 0.4rem; cursor: pointer;
+  }
+  .card-img-placeholder span { font-size: 0.6rem; letter-spacing: 0.1em; text-transform: uppercase; }
+
+  .card-body { padding: 0.65rem 0.75rem 0.75rem; }
+  .card-brand-badge {
+    display: inline-block; padding: 0.14rem 0.55rem; border-radius: 999px;
+    font-size: 0.56rem; font-weight: 500; letter-spacing: 0.1em;
+    text-transform: uppercase; margin-bottom: 0.3rem; color: white;
+  }
+  .badge-nailvesta  { background: var(--nailvesta); }
+  .badge-nailphoria { background: var(--nailphoria); }
+  .badge-other { background: var(--other); }
+
+  .card-name { font-family: 'Cormorant Garamond', serif; font-size: 1rem; font-weight: 400; line-height: 1.2; color: var(--deep); margin-bottom: 0.18rem; }
+  .card-shape { font-size: 0.6rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--rose); font-weight: 300; }
+  .card-notes { font-size: 0.65rem; color: var(--mauve); margin-top: 0.25rem; font-weight: 300; }
+
+  .card-actions { display: flex; gap: 0.35rem; margin-top: 0.6rem; }
+  .card-btn {
+    flex: 1; padding: 0.32rem 0; border-radius: 7px; border: 1px solid var(--blush);
+    background: transparent; cursor: pointer; font-family: 'Jost', sans-serif;
+    font-size: 0.62rem; letter-spacing: 0.07em; color: var(--mauve); transition: all 0.18s;
+  }
+  .card-btn:hover { background: var(--blush); border-color: var(--rose); color: var(--deep); }
+  .card-btn.delete:hover { background: #fdeaea; border-color: #e57373; color: #c62828; }
+
+  /* ── Toast ── */
+  .toast {
+    position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%) translateY(80px);
+    background: var(--deep); color: white; padding: 0.65rem 1.4rem;
+    border-radius: 999px; font-size: 0.78rem; letter-spacing: 0.05em;
+    z-index: 999; transition: transform 0.3s ease; white-space: nowrap;
+    pointer-events: none;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+  .toast.error { background: #c62828; }
+
+  /* ── Modal ── */
+  .modal-overlay {
+    position: fixed; inset: 0; background: rgba(61,34,41,0.38);
+    backdrop-filter: blur(6px); z-index: 100;
+    display: flex; align-items: center; justify-content: center; padding: 1rem;
+    opacity: 0; pointer-events: none; transition: opacity 0.25s;
+  }
+  .modal-overlay.open { opacity: 1; pointer-events: all; }
+  .modal {
+    background: var(--cream); border-radius: 18px; padding: 2rem;
+    width: 100%; max-width: 440px; max-height: 90vh; overflow-y: auto;
+    box-shadow: 0 24px 64px rgba(61,34,41,0.2);
+    transform: translateY(20px) scale(0.97); transition: transform 0.25s;
+  }
+  .modal-overlay.open .modal { transform: none; }
+  .modal h2 { font-family: 'Cormorant Garamond', serif; font-weight: 300; font-size: 1.7rem; color: var(--deep); margin-bottom: 1.3rem; }
+  .form-group { margin-bottom: 1rem; }
+  .form-label { display: block; font-size: 0.6rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--mauve); margin-bottom: 0.35rem; }
+  .form-input, .form-select {
+    width: 100%; padding: 0.6rem 0.85rem; border: 1.5px solid var(--blush);
+    border-radius: 9px; background: white; font-family: 'Jost', sans-serif;
+    font-size: 0.86rem; color: var(--deep); transition: border-color 0.18s; appearance: none;
+  }
+  .form-input:focus, .form-select:focus { outline: none; border-color: var(--rose); }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.7rem; }
+
+  .photo-upload-area {
+    border: 2px dashed var(--blush); border-radius: 11px; padding: 1.5rem;
+    text-align: center; cursor: pointer; transition: all 0.18s; position: relative;
+  }
+  .photo-upload-area:hover { border-color: var(--rose); background: #fff8f6; }
+  .photo-upload-area input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+  .upload-icon { font-size: 1.6rem; margin-bottom: 0.3rem; }
+  .upload-text { font-size: 0.7rem; color: var(--mauve); }
+  .photo-preview { width: 100%; max-height: 160px; object-fit: cover; border-radius: 9px; margin-top: 0.7rem; display: none; }
+  .photo-preview.visible { display: block; }
+
+  .modal-actions { display: flex; gap: 0.6rem; margin-top: 1.3rem; }
+  .modal-vibe-pill {
+    padding: 0.32rem 0.85rem; border-radius: 999px; border: 1px solid var(--blush);
+    background: white; cursor: pointer; font-family: 'Jost', sans-serif;
+    font-size: 0.72rem; font-weight: 400; letter-spacing: 0.07em;
+    color: var(--mauve); transition: all 0.18s; white-space: nowrap;
+    min-height: 32px; -webkit-appearance: none;
+  }
+  .modal-vibe-pill:hover { border-color: var(--rose); color: var(--rose); }
+  .modal-vibe-pill.active { background: var(--rose); border-color: var(--rose); color: white; }
+
+  .btn-cancel {
+    flex: 1; padding: 0.65rem; border-radius: 9px; border: 1.5px solid var(--blush);
+    background: transparent; cursor: pointer; font-family: 'Jost', sans-serif;
+    font-size: 0.78rem; color: var(--mauve); transition: background 0.18s;
+  }
+  .btn-cancel:hover { background: var(--blush); }
+  .btn-save {
+    flex: 2; padding: 0.65rem; border-radius: 9px; border: none;
+    background: var(--deep); color: white; cursor: pointer;
+    font-family: 'Jost', sans-serif; font-size: 0.78rem;
+    letter-spacing: 0.12em; text-transform: uppercase; transition: background 0.18s;
+  }
+  .btn-save:hover:not(:disabled) { background: var(--rose); }
+  .btn-save:disabled { opacity: 0.55; cursor: not-allowed; }
+
+  /* ── Lightbox ── */
+  .lightbox {
+    position: fixed; inset: 0; background: rgba(20,10,12,0.9);
+    z-index: 200; display: flex; align-items: center; justify-content: center;
+    opacity: 0; pointer-events: none; transition: opacity 0.2s;
+  }
+  .lightbox.open { opacity: 1; pointer-events: all; }
+  .lightbox img { max-width: 92vw; max-height: 88vh; border-radius: 10px; object-fit: contain; }
+  .lightbox-close {
+    position: absolute; top: 1.2rem; right: 1.2rem; background: white; border: none;
+    border-radius: 50%; width: 36px; height: 36px; cursor: pointer; font-size: 1rem;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  @media (max-width: 600px) {
+    /* Prevent iOS auto-zoom on input focus */
+    .form-input, .form-select { font-size: 16px; }
+    .header-stats {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      border-radius: 12px;
+      width: 100%;
+      overflow: hidden;
+    }
+    .stat {
+      padding: 0.9rem 0.1rem;
+      border-right: 1px solid var(--blush);
+      min-width: 0;
+    }
+    .stat:last-child { border-right: none; }
+    .stat-num { font-size: 1.5rem; }
+    .stat-label { font-size: 0.46rem; letter-spacing: 0.06em; }
+    .controls-top { justify-content: flex-start; }
+    .search-input { width: 100%; }
+    .grid { gap: 0.7rem; }
+    .modal { padding: 1.4rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <!-- Header -->
+  <header>
+    <div class="header-eyebrow">✦ My Collection ✦</div>
+    <h1>Press-On <em>Nail Archive</em></h1>
+    <div class="header-stats">
+      <div class="stat">
+        <div class="stat-num" id="total-count">—</div>
+        <div class="stat-label">Total</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num" id="nailvesta-count" style="color:var(--nailvesta)">—</div>
+        <div class="stat-label">NailVesta</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num" id="nailphoria-count" style="color:var(--nailphoria)">—</div>
+        <div class="stat-label">NailPhoria</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num" id="other-count" style="color:var(--other)">—</div>
+        <div class="stat-label">Other</div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Controls -->
+  <div class="controls">
+    <div class="controls-top">
+      <div class="search-wrap">
+        <span class="search-icon">🔍</span>
+        <input class="search-input" id="search" placeholder="Search…" />
+      </div>
+      <button class="add-btn" id="open-modal">＋ Add Set</button>
+    </div>
+    <div class="brand-tabs">
+      <button class="brand-tab all active"  data-brand="all">All</button>
+      <button class="brand-tab nailvesta"   data-brand="nailvesta">NailVesta</button>
+      <button class="brand-tab nailphoria"  data-brand="nailphoria">NailPhoria</button>
+      <button class="brand-tab other"        data-brand="other">Other</button>
+    </div>
+  </div>
+
+  <!-- Two-tier filters -->
+  <div class="filter-tiers">
+    <div class="filter-row">
+      <span class="filter-row-label">Length</span>
+      <button class="shape-pill active" data-tier="length" data-val="all">All</button>
+      <button class="shape-pill" data-tier="length" data-val="short">Short</button>
+      <button class="shape-pill" data-tier="length" data-val="medium">Medium</button>
+      <button class="shape-pill" data-tier="length" data-val="long">Long</button>
+    </div>
+    <div class="filter-row">
+      <span class="filter-row-label">Shape</span>
+      <button class="shape-pill active" data-tier="shape" data-val="all">All</button>
+      <button class="shape-pill" data-tier="shape" data-val="square">Square</button>
+      <button class="shape-pill" data-tier="shape" data-val="almond">Almond</button>
+      <button class="shape-pill" data-tier="shape" data-val="stiletto">Stiletto</button>
+    </div>
+    <div class="filter-row vibe-row">
+      <span class="filter-row-label">Vibe</span>
+      <button class="vibe-pill active" data-tier="vibe" data-val="all">All</button>
+      <button class="vibe-pill" data-tier="vibe" data-val="summer">Summer</button>
+      <button class="vibe-pill" data-tier="vibe" data-val="fall">Fall</button>
+      <button class="vibe-pill" data-tier="vibe" data-val="dark">Dark</button>
+      <button class="vibe-pill" data-tier="vibe" data-val="spring">Spring</button>
+      <button class="vibe-pill" data-tier="vibe" data-val="everyday">Everyday</button>
+    </div>
+    <div class="filter-row vibe-row">
+      <span class="filter-row-label">Status</span>
+      <button class="vibe-pill active" data-tier="status" data-val="all">All</button>
+      <button class="vibe-pill" data-tier="status" data-val="worn">Worn</button>
+      <button class="vibe-pill" data-tier="status" data-val="archived">Archived</button>
+    </div>
+  </div>
+
+  <!-- Status / Grid -->
+  <div id="status-area" class="status-state">
+    <div class="spinner"></div>
+    <h3>Loading your collection…</h3>
+  </div>
+
+  <div class="grid" id="grid" style="display:none"></div>
+</div>
+
+<!-- Modal -->
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal">
+    <h2 id="modal-title">Add New Set</h2>
+
+    <div class="form-group">
+      <label class="form-label">Set Name</label>
+      <input class="form-input" id="f-name" placeholder="e.g. Cherry Blossom Dreams" />
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Brand</label>
+      <select class="form-select" id="f-brand">
+        <option value="">Select brand…</option>
+        <option value="nailvesta">NailVesta</option>
+        <option value="nailphoria">NailPhoria</option>
+        <option value="other">Other</option>
+      </select>
+    </div>
+
+    <div class="form-row form-group">
+      <div>
+        <label class="form-label">Length</label>
+        <select class="form-select" id="f-length">
+          <option value="">Select…</option>
+          <option value="short">Short</option>
+          <option value="medium">Medium</option>
+          <option value="long">Long</option>
+        </select>
+      </div>
+      <div>
+        <label class="form-label">Shape</label>
+        <select class="form-select" id="f-shape">
+          <option value="">Select…</option>
+          <option value="square">Square</option>
+          <option value="almond">Almond</option>
+          <option value="stiletto">Stiletto</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Photo</label>
+      <div class="photo-upload-area" id="upload-area">
+        <input type="file" accept="image/*" id="f-photo" />
+        <div class="upload-icon">📷</div>
+        <div class="upload-text" id="upload-text">Click to upload a photo</div>
+      </div>
+      <img class="photo-preview" id="photo-preview" src="" alt="Preview" />
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Vibe (optional — tap to select)</label>
+      <div id="f-vibe-pills" style="display:flex;flex-wrap:wrap;gap:0.4rem;margin-top:0.1rem;">
+        <button type="button" class="modal-vibe-pill" data-vibe="summer">Summer</button>
+        <button type="button" class="modal-vibe-pill" data-vibe="fall">Fall</button>
+        <button type="button" class="modal-vibe-pill" data-vibe="dark">Dark</button>
+        <button type="button" class="modal-vibe-pill" data-vibe="spring">Spring</button>
+        <button type="button" class="modal-vibe-pill" data-vibe="everyday">Everyday</button>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Status</label>
+      <div id="f-status-pills" style="display:flex;gap:0.4rem;flex-wrap:nowrap;">
+        <button type="button" class="modal-status-pill active" data-status="" style="flex:1;text-align:center;padding:0.42rem 0.25rem;border-radius:999px;border:1.5px solid var(--blush);background:white;cursor:pointer;font-family:'Jost',sans-serif;font-size:0.7rem;color:var(--mauve);transition:all 0.2s;">Neutral</button>
+        <button type="button" class="modal-status-pill" data-status="worn" style="flex:1;text-align:center;padding:0.42rem 0.25rem;border-radius:999px;border:1.5px solid #6abf87;background:white;cursor:pointer;font-family:'Jost',sans-serif;font-size:0.7rem;color:#4a9a67;transition:all 0.2s;">Worn</button>
+        <button type="button" class="modal-status-pill" data-status="archived" style="flex:1;text-align:center;padding:0.42rem 0.25rem;border-radius:999px;border:1.5px solid #e57373;background:white;cursor:pointer;font-family:'Jost',sans-serif;font-size:0.7rem;color:#c62828;transition:all 0.2s;">Archived</button>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Notes (optional)</label>
+      <input class="form-input" id="f-notes" placeholder="e.g. worn for wedding, fave finish…" />
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn-cancel" id="close-modal">Cancel</button>
+      <button class="btn-save" id="save-btn">Save Set ✦</button>
+    </div>
+  </div>
+</div>
+
+<!-- Lightbox -->
+<div class="lightbox" id="lightbox">
+  <button class="lightbox-close" id="lightbox-close">✕</button>
+  <img id="lightbox-img" src="" alt="" />
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+  // ── Supabase init ──────────────────────────────────────────────────────────
+  const SUPABASE_URL  = 'https://hggxuvywdmpcndtzmpwh.supabase.co';
+  const SUPABASE_KEY  = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhnZ3h1dnl3ZG1wY25kdHptcHdoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg2ODA3MTksImV4cCI6MjA5NDI1NjcxOX0.TNlrExwdCXiq191c1kYuuyhtKjEVU7J1od8rdZwjnms';
+  const { createClient } = supabase;
+  const db = createClient(SUPABASE_URL, SUPABASE_KEY);
+  const TABLE = 'nail_sets';
+  const BUCKET = 'nail-photos';
+
+  // ── State ──────────────────────────────────────────────────────────────────
+  let sets         = [];
+  let editId       = null;
+  let pendingPhoto = null; // base64 data URL (new upload preview)
+  let pendingFile  = null; // raw File object for upload
+  let activeBrand  = 'all';
+  let activeLength = 'all';
+  let activeShape  = 'all';
+  let activeVibes  = new Set(['all']);
+  let activeStatus = 'all';
+  let searchQ      = '';
+
+  const BRAND_LABELS  = { nailvesta:'NailVesta', nailphoria:'NailPhoria', other:'Other' };
+  const VIBE_LABELS   = { summer:'Summer', fall:'Fall', dark:'Dark', spring:'Spring', everyday:'Everyday' };
+  const BRAND_COLORS  = { nailvesta:'#7a8cb5', nailphoria:'#b5768c', other:'#9b8f6b' };
+  const LENGTH_LABELS = { short:'Short', medium:'Medium', long:'Long' };
+  const SHAPE_LABELS  = { square:'Square', almond:'Almond', stiletto:'Stiletto', other:'Other' };
+
+  function shapeDisplay(length, shape) {
+    return [LENGTH_LABELS[length]||'', SHAPE_LABELS[shape]||''].filter(Boolean).join(' ') || '—';
+  }
+
+  // ── Toast ──────────────────────────────────────────────────────────────────
+  let toastTimer;
+  function showToast(msg, isError = false) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.className = 'toast' + (isError ? ' error' : '');
+    void t.offsetWidth;
+    t.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => t.classList.remove('show'), 3000);
+  }
+
+  // ── Photo: upload to Supabase Storage ─────────────────────────────────────
+  async function uploadPhoto(file) {
+    // Try storage bucket upload; fall back to base64 if bucket doesn't exist
+    const ext  = file.name.split('.').pop();
+    const path = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+    const { data, error } = await db.storage.from(BUCKET).upload(path, file, { upsert: false });
+    if (error) {
+      // Bucket may not exist yet — store as base64 in DB instead
+      return await fileToBase64(file);
+    }
+    const { data: urlData } = db.storage.from(BUCKET).getPublicUrl(path);
+    return urlData.publicUrl;
+  }
+
+  function fileToBase64(file) {
+    return new Promise((res, rej) => {
+      const reader = new FileReader();
+      reader.onload = e => res(e.target.result);
+      reader.onerror = rej;
+      reader.readAsDataURL(file);
+    });
+  }
+
+  // ── Load from Supabase ─────────────────────────────────────────────────────
+  async function loadSets() {
+    const { data, error } = await db.from(TABLE).select('*').order('created_at', { ascending: false });
+    if (error) {
+      showStatus('error');
+      showToast('Could not connect to database. Check your Supabase setup.', true);
+      return;
+    }
+    // Migrate legacy brands → 'other'
+    const legacyOther = (data || []).filter(s => ['etsy','lilynailsart','nailhaven'].includes(s.brand)).map(s => s.id);
+    if (legacyOther.length) {
+      await db.from(TABLE).update({ brand: 'other' }).in('id', legacyOther);
+    }
+    sets = (data || []).map(s => ['etsy','lilynailsart','nailhaven'].includes(s.brand) ? { ...s, brand: 'other' } : s);
+    showStatus('done');
+    render();
+    updateOgImage();
+  }
+
+  // ── Status area ────────────────────────────────────────────────────────────
+  function showStatus(state) {
+    const area = document.getElementById('status-area');
+    const grid = document.getElementById('grid');
+    if (state === 'loading') {
+      area.style.display = 'block';
+      area.innerHTML = '<div class="spinner"></div><h3>Loading your collection…</h3>';
+      grid.style.display = 'none';
+    } else if (state === 'error') {
+      area.style.display = 'block';
+      area.innerHTML = '<div class="status-icon">⚠️</div><h3>Connection error</h3><p>Could not reach Supabase. Check your project settings.</p>';
+      grid.style.display = 'none';
+    } else {
+      area.style.display = 'none';
+      grid.style.display = 'grid';
+    }
+  }
+
+  // ── Filter ─────────────────────────────────────────────────────────────────
+  function filtered() {
+    const q = searchQ.toLowerCase();
+    return sets.filter(s => {
+      if (activeBrand  !== 'all' && s.brand  !== activeBrand)  return false;
+      if (activeLength !== 'all' && s.length !== activeLength) return false;
+      if (activeShape  !== 'all' && s.shape  !== activeShape)  return false;
+      if (!activeVibes.has('all')) {
+        const setVibes = (s.vibe || '').split(',').map(v => v.trim()).filter(Boolean);
+        if (!setVibes.some(v => activeVibes.has(v))) return false;
+      }
+      if (activeStatus !== 'all' && (s.status||'') !== activeStatus) return false;
+      if (q && !s.name.toLowerCase().includes(q) && !(s.notes||'').toLowerCase().includes(q)) return false;
+      return true;
+    });
+  }
+
+  // ── Render ──────────────────────────────────────────────────────────────────
+  function render() {
+    const grid  = document.getElementById('grid');
+    const list  = filtered();
+    const empty = list.length === 0;
+
+    document.getElementById('total-count').textContent      = sets.length;
+    document.getElementById('nailvesta-count').textContent  = sets.filter(s=>s.brand==='nailvesta').length;
+    document.getElementById('nailphoria-count').textContent = sets.filter(s=>s.brand==='nailphoria').length;
+    document.getElementById('other-count').textContent      = sets.filter(s=>s.brand==='other').length;
+
+    grid.innerHTML = '';
+
+    if (empty) {
+      grid.style.display = 'none';
+      const area = document.getElementById('status-area');
+      area.style.display = 'block';
+      area.innerHTML = '<div class="status-icon">💅</div><h3>No sets found</h3><p>Try a different filter or add your first set!</p>';
+      return;
+    }
+
+    document.getElementById('status-area').style.display = 'none';
+    grid.style.display = 'grid';
+
+    if (activeBrand === 'all') {
+      ['nailvesta','nailphoria','other'].forEach(brand => {
+        const group = list.filter(s => s.brand === brand);
+        if (!group.length) return;
+        const h = document.createElement('div');
+        h.className = 'brand-heading';
+        h.innerHTML = `<div class="dot" style="background:${BRAND_COLORS[brand]}"></div>
+          <h2 style="color:${BRAND_COLORS[brand]}">${BRAND_LABELS[brand]}</h2>
+          <span class="count">${group.length} set${group.length!==1?'s':''}</span>`;
+        grid.appendChild(h);
+        group.forEach(s => grid.appendChild(makeCard(s)));
+      });
+    } else {
+      list.forEach(s => grid.appendChild(makeCard(s)));
+    }
+  }
+
+  // ── Open Graph image: pick first set photo for link previews ───────────────
+  function updateOgImage() {
+    const withPhoto = sets.find(s => s.photo && s.photo.startsWith('http'));
+    const tag = document.querySelector('meta[property="og:image"]');
+    if (tag && withPhoto) tag.setAttribute('content', withPhoto.photo);
+  }
+
+  function makeCard(s) {
+    const card = document.createElement('div');
+    card.className = 'card' + (s.status === 'worn' ? ' status-worn' : s.status === 'archived' ? ' status-archived' : '');
+    card.style.animationDelay = Math.random()*0.07+'s';
+
+    const imgHTML = s.photo
+      ? `<img class="card-img" src="${s.photo}" alt="${s.name}" data-lb />`
+      : `<div class="card-img-placeholder" data-edit>💅<span>Add Photo</span></div>`;
+
+    card.innerHTML = `${imgHTML}
+      <div class="card-body">
+        <span class="card-brand-badge badge-${s.brand}">${BRAND_LABELS[s.brand]}</span>
+        <div class="card-name">${s.name}</div>
+        <div class="card-shape">${shapeDisplay(s.length, s.shape)}</div>
+        ${s.vibe ? s.vibe.split(',').map(v => v.trim()).filter(Boolean).map(v =>
+          `<span style="display:inline-block;margin:0.2rem 0.2rem 0 0;font-size:0.56rem;letter-spacing:0.07em;color:var(--mauve);background:var(--blush);padding:0.1rem 0.45rem;border-radius:999px;">${VIBE_LABELS[v]||v}</span>`
+        ).join('') : ''}
+        ${s.notes?`<div class="card-notes">${s.notes}</div>`:''}
+        <div class="card-actions">
+          <button class="card-btn" data-edit>Edit</button>
+          <button class="card-btn delete" data-del>Remove</button>
+        </div>
+      </div>`;
+
+    const img = card.querySelector('[data-lb]');
+    if (img) img.addEventListener('click', () => openLightbox(s.photo));
+    card.querySelectorAll('[data-edit]').forEach(el => el.addEventListener('click', () => openEdit(s.id)));
+    card.querySelector('[data-del]').addEventListener('click', () => handleDelete(s.id, s.name));
+    return card;
+  }
+
+  // ── CRUD ───────────────────────────────────────────────────────────────────
+  async function handleSave() {
+    const name   = document.getElementById('f-name').value.trim();
+    const brand  = document.getElementById('f-brand').value;
+    const length = document.getElementById('f-length').value;
+    const shape  = document.getElementById('f-shape').value;
+    const notes  = document.getElementById('f-notes').value.trim();
+
+    if (!name || !brand || !length || !shape) {
+      showToast('Please fill in name, brand, length, and shape.', true); return;
+    }
+
+    const saveBtn = document.getElementById('save-btn');
+    saveBtn.disabled = true;
+    saveBtn.textContent = 'Saving…';
+
+    // Upload photo if a new file was chosen
+    let photoUrl = pendingPhoto; // may already be a URL (edit with existing photo)
+    if (pendingFile) {
+      photoUrl = await uploadPhoto(pendingFile);
+    }
+
+    const vibe   = [...document.querySelectorAll('.modal-vibe-pill.active')].map(p => p.dataset.vibe).join(',');
+    const status = document.querySelector('.modal-status-pill.active')?.dataset.status || '';
+    const payload = { name, brand, length, shape, vibe: vibe || null, status: status || null, notes: notes || null, photo: photoUrl || null };
+
+    if (editId) {
+      const { error } = await db.from(TABLE).update(payload).eq('id', editId);
+      if (error) { showToast('Error: ' + (error.message || 'Failed to update set.'), true); console.error('Update error:', error); }
+      else {
+        const idx = sets.findIndex(s => s.id === editId);
+        sets[idx] = { ...sets[idx], ...payload };
+        showToast('Set updated! ✦');
+        closeModal(); render();
+      }
+    } else {
+      const newRow = { ...payload, id: crypto.randomUUID() };
+      const { error } = await db.from(TABLE).insert(newRow);
+      if (error) { showToast('Error: ' + (error.message || 'Failed to save set.'), true); console.error('Insert error:', error); }
+      else {
+        sets.unshift(newRow);
+        showToast('Set added! 💅');
+        closeModal(); render();
+      }
+    }
+
+    saveBtn.disabled = false;
+    saveBtn.textContent = 'Save Set ✦';
+  }
+
+  async function handleDelete(id, name) {
+    if (!confirm(`Remove "${name}"?`)) return;
+    const { error } = await db.from(TABLE).delete().eq('id', id);
+    if (error) { showToast('Failed to remove set.', true); return; }
+    sets = sets.filter(s => s.id !== id);
+    showToast('Set removed.');
+    render();
+  }
+
+  // ── Modal ──────────────────────────────────────────────────────────────────
+  function openModal() {
+    editId = null; pendingPhoto = null; pendingFile = null;
+    document.getElementById('modal-title').textContent = 'Add New Set';
+    ['f-name','f-notes'].forEach(id => document.getElementById(id).value = '');
+    ['f-brand','f-length','f-shape'].forEach(id => document.getElementById(id).value = '');
+    document.querySelectorAll('.modal-vibe-pill').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.modal-status-pill').forEach(p => p.classList.remove('active'));
+    document.querySelector('.modal-status-pill[data-status=""]').classList.add('active');
+    document.getElementById('f-photo').value = '';
+    document.getElementById('upload-text').textContent = 'Click to upload a photo';
+    const prev = document.getElementById('photo-preview');
+    prev.classList.remove('visible'); prev.src = '';
+    document.getElementById('modal-overlay').classList.add('open');
+  }
+
+  function openEdit(id) {
+    const s = sets.find(x => x.id === id); if (!s) return;
+    editId = id; pendingPhoto = s.photo || null; pendingFile = null;
+    document.getElementById('modal-title').textContent = 'Edit Set';
+    document.getElementById('f-name').value   = s.name;
+    document.getElementById('f-brand').value  = s.brand;
+    document.getElementById('f-length').value = s.length || '';
+    document.getElementById('f-shape').value  = s.shape  || '';
+    document.querySelectorAll('.modal-vibe-pill').forEach(p => {
+      const vibes = (s.vibe || '').split(',').map(v => v.trim());
+      p.classList.toggle('active', vibes.includes(p.dataset.vibe));
+    });
+    document.getElementById('f-notes').value  = s.notes  || '';
+    document.querySelectorAll('.modal-status-pill').forEach(p => {
+      p.classList.toggle('active', (p.dataset.status||'') === (s.status||''));
+    });
+    document.getElementById('f-photo').value  = '';
+    document.getElementById('upload-text').textContent = s.photo ? 'Click to replace photo' : 'Click to upload a photo';
+    const prev = document.getElementById('photo-preview');
+    if (s.photo) { prev.src = s.photo; prev.classList.add('visible'); }
+    else prev.classList.remove('visible');
+    document.getElementById('modal-overlay').classList.add('open');
+  }
+
+  function closeModal() { document.getElementById('modal-overlay').classList.remove('open'); }
+
+  document.getElementById('open-modal').addEventListener('click', openModal);
+  document.getElementById('close-modal').addEventListener('click', closeModal);
+  document.getElementById('modal-overlay').addEventListener('click', e => { if (e.target === e.currentTarget) closeModal(); });
+  document.getElementById('save-btn').addEventListener('click', handleSave);
+
+  // Modal status pills — single select
+  document.querySelectorAll('.modal-status-pill').forEach(pill => {
+    pill.addEventListener('click', () => {
+      document.querySelectorAll('.modal-status-pill').forEach(p => {
+        p.classList.remove('active');
+        p.style.background = 'white';
+      });
+      pill.classList.add('active');
+      const st = pill.dataset.status;
+      if (st === 'worn')     pill.style.background = '#e8f5ee';
+      else if (st === 'archived') pill.style.background = '#fdeaea';
+      else pill.style.background = 'white';
+    });
+  });
+
+  // Modal vibe pills — multi-select toggle
+  document.querySelectorAll('.modal-vibe-pill').forEach(pill => {
+    pill.addEventListener('click', () => {
+      pill.classList.toggle('active');
+    });
+  });
+
+  document.getElementById('f-photo').addEventListener('change', async e => {
+    const file = e.target.files[0]; if (!file) return;
+    pendingFile = file;
+    document.getElementById('upload-text').textContent = file.name;
+    const preview = document.getElementById('photo-preview');
+    // Show local preview immediately
+    pendingPhoto = await fileToBase64(file);
+    preview.src = pendingPhoto;
+    preview.classList.add('visible');
+  });
+
+  // ── Lightbox ───────────────────────────────────────────────────────────────
+  function openLightbox(src) {
+    document.getElementById('lightbox-img').src = src;
+    document.getElementById('lightbox').classList.add('open');
+  }
+  document.getElementById('lightbox-close').addEventListener('click', () => document.getElementById('lightbox').classList.remove('open'));
+  document.getElementById('lightbox').addEventListener('click', e => { if (e.target === e.currentTarget) e.currentTarget.classList.remove('open'); });
+
+  // ── Filter listeners ───────────────────────────────────────────────────────
+  document.querySelectorAll('.brand-tab').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.brand-tab').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active'); activeBrand = btn.dataset.brand; render();
+    });
+  });
+  document.querySelectorAll('[data-tier="length"]').forEach(pill => {
+    pill.addEventListener('click', () => {
+      document.querySelectorAll('[data-tier="length"]').forEach(p => p.classList.remove('active'));
+      pill.classList.add('active'); activeLength = pill.dataset.val; render();
+    });
+  });
+  document.querySelectorAll('[data-tier="shape"]').forEach(pill => {
+    pill.addEventListener('click', () => {
+      document.querySelectorAll('[data-tier="shape"]').forEach(p => p.classList.remove('active'));
+      pill.classList.add('active'); activeShape = pill.dataset.val; render();
+    });
+  });
+  document.querySelectorAll('[data-tier="vibe"]').forEach(pill => {
+    pill.addEventListener('click', () => {
+      const val = pill.dataset.val;
+      if (val === 'all') {
+        // Reset to all
+        activeVibes = new Set(['all']);
+        document.querySelectorAll('[data-tier="vibe"]').forEach(p => p.classList.remove('active'));
+        pill.classList.add('active');
+      } else {
+        // Toggle this vibe
+        activeVibes.delete('all');
+        document.querySelector('[data-tier="vibe"][data-val="all"]').classList.remove('active');
+        if (activeVibes.has(val)) {
+          activeVibes.delete(val);
+          pill.classList.remove('active');
+          // If nothing selected, revert to all
+          if (activeVibes.size === 0) {
+            activeVibes.add('all');
+            document.querySelector('[data-tier="vibe"][data-val="all"]').classList.add('active');
+          }
+        } else {
+          activeVibes.add(val);
+          pill.classList.add('active');
+        }
+      }
+      render();
+    });
+  });
+
+  document.querySelectorAll('[data-tier="status"]').forEach(pill => {
+    pill.addEventListener('click', () => {
+      document.querySelectorAll('[data-tier="status"]').forEach(p => p.classList.remove('active'));
+      pill.classList.add('active'); activeStatus = pill.dataset.val; render();
+    });
+  });
+
+  document.getElementById('search').addEventListener('input', e => { searchQ = e.target.value; render(); });
+
+  // ── Boot ───────────────────────────────────────────────────────────────────
+  loadSets();
+</script>
+</body>
+</html>
